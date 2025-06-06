@@ -3,6 +3,10 @@ from .models import Loan
 from django.core.mail import send_mail
 from django.conf import settings
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 @shared_task
 def send_loan_notification(loan_id):
     try:
@@ -16,5 +20,7 @@ def send_loan_notification(loan_id):
             recipient_list=[member_email],
             fail_silently=False,
         )
+        logger.info(f'The book {book_title} was loaned, loan notification sent for loan id: {loan_id}')
     except Loan.DoesNotExist:
-        pass
+        logger.warning('Loan object does not exist')
+
